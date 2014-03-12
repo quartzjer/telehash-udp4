@@ -14,7 +14,7 @@ exports.install = function(self, args)
     self.receive(msg.toString("binary"), {type:"ipv4", ip:rinfo.address, port:rinfo.port});
   }
 
-  var server = dgram.createSocket("udp4", msgs4);
+  var server = dgram.createSocket("udp4", msgs);
   server.on("error", function(err){
     console.log("error from the UDP socket",err);
     process.exit(1);
@@ -26,6 +26,7 @@ exports.install = function(self, args)
   });
 
   var networkIP = "";
+  self.wait(true);
   server.bind(args.port, "0.0.0.0", function(err){
     // regularly update w/ local ip address changes
     function interfaces()
@@ -46,38 +47,42 @@ exports.install = function(self, args)
     }
     interfaces();
 
-  });
+    if(!args.nolan)
+    {
+      self.deliver("lan",function(to,msg){
+        var buf = Buffer.isBuffer(msg) ? msg : new Buffer(msg, "binary");
+        // blast the packet out on the lan with a temp socket
+        var lan = dgram.createSocket("udp4");
+        lan.bind(server.address().port, "0.0.0.0", function(err){
+          lan.setBroadcast(true);
+          // brute force to common subnets and all
+          if(networkIP)
+          {
+            var parts = networkIP.split(".");
+            for(var i = 3; i >= 0; i--)
+            {
+              parts[i] = "255";
+              lan.send(buf, 0, buf.length, 42420, parts.join("."));
+            }          
+          }
+          lan.send(buf, 0, buf.length, 42420, "239.42.42.42", function(){
+            lan.close();
+          });
+        });    
+      });    
 
-  if(args.nolan) return true;
-
-  self.deliver("lan",function(to,msg){
-    var buf = Buffer.isBuffer(msg) ? msg : new Buffer(msg, "binary");
-    // blast the packet out on the lan with a temp socket
-    var lan = dgram.createSocket("udp4");
-    lan.bind(server.address().port, "0.0.0.0", function(err){
-      lan.setBroadcast(true);
-      // brute force to common subnets and all
-      if(networkIP)
-      {
-        var parts = networkIP.split(".");
-        for(var i = 3; i >= 0; i--)
-        {
-          parts[i] = "255";
-          lan.send(buf, 0, buf.length, 42420, parts.join("."));
-        }          
-      }
-      lan.send(buf, 0, buf.length, 42420, "239.42.42.42", function(){
-        lan.close();
+      // start the lan * listener
+      var lan = dgram.createSocket("udp4", msgs);
+      lan.bind(42420, "0.0.0.0", function(err){
+        lan.setMulticastLoopback(true)
+        lan.addMembership("239.42.42.42");
+        lan.setBroadcast(true);
       });
-    });    
-  });    
-
-  // start the lan * listener
-  var lan = dgram.createSocket("udp4", msgs4);
-  lan.bind(42420, "0.0.0.0", function(err){
-    lan.setMulticastLoopback(true)
-    lan.addMembership("239.42.42.42");
-    lan.setBroadcast(true);
+    }
+    
+    // enables online()
+    self.wait(false);
   });
+
 }
 
