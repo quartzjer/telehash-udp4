@@ -3,6 +3,7 @@ var os = require("os");
 
 exports.install = function(self, args)
 {
+  var paths = [];
   if(!args) args = {};
   if(args.port == 42420)
   {
@@ -25,7 +26,6 @@ exports.install = function(self, args)
     server.send(buf, 0, buf.length, to.port, to.ip);    
   });
 
-  var networkIP = "";
   self.wait(true);
   server.bind(args.port, "0.0.0.0", function(err){
     // regularly update w/ local ip address changes
@@ -33,16 +33,29 @@ exports.install = function(self, args)
     {
       var ifaces = os.networkInterfaces()
       var address = server.address();
+      var paths2 = [];
       for (var dev in ifaces) {
         ifaces[dev].forEach(function(details){
-          // upgrade to actual interface ip, prefer local ones
-          if(details.family == "IPv4" && !details.internal && self.isLocalIP(address.address)) address.address = details.address;
+          if(details.family != "IPv4") return;
+          if(details.internal) return;
+          var path = {type:"ipv4",ip:details.address,port:address.port};
+          if(self.pathMatch(path,paths2)) return;
+          paths2.push(path);
         });
       }
-      networkIP = address.address; // used for local broadcasting
-      // allow overridden lan4 ip address
-      if(args.ip) address.address = args.ip;
-      self.pathSet({type:"lan4",ip:address.address,port:address.port});
+      paths2.forEach(function(path){
+        var path1 = self.pathMatch(path,paths);
+        // add new ones
+        if(!path1) self.pathSet(path);
+        // look for old missing ones to remove
+        paths.splice(paths.indexOf(path1),1);
+      });
+      // leftovers gone
+      paths.forEach(function(path){
+        self.pathSet(path,true);
+      });
+      // for next time
+      paths = paths2;
       setTimeout(interfaces,10000);
     }
     interfaces();
@@ -56,14 +69,18 @@ exports.install = function(self, args)
         lan.bind(server.address().port, "0.0.0.0", function(err){
           lan.setBroadcast(true);
           // brute force to common subnets and all
-          if(networkIP)
-          {
-            var parts = networkIP.split(".");
-            for(var i = 3; i >= 0; i--)
-            {
-              parts[i] = "255";
-              lan.send(buf, 0, buf.length, 42420, parts.join("."));
-            }          
+          var ifaces = os.networkInterfaces()
+          for (var dev in ifaces) {
+            ifaces[dev].forEach(function(details){
+              if(details.family != "IPv4") return;
+              if(details.internal) return;
+              var parts = details.address.split(".");
+              for(var i = 3; i >= 0; i--)
+              {
+                parts[i] = "255";
+                lan.send(buf, 0, buf.length, 42420, parts.join("."));
+              }
+            });
           }
           lan.send(buf, 0, buf.length, 42420, "239.42.42.42", function(){
             lan.close();
