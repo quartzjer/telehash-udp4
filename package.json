@@ -1,13 +1,20 @@
 {
-  "name": "telehash-ipv4",
+  "name": "telehash-udp4",
   "version": "0.0.3",
-  "description": "Network bindings for telehash to ipv4 udp",
+  "description": "Transport bindings for telehash to udp4",
   "main": "index.js",
   "dependencies": {
   },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
+  },
+  "scripts": {
+      "test": "make test"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/quartzjer/telehash-ipv4.git"
+    "url": "https://github.com/quartzjer/telehash-udp4.git"
   },
   "keywords": [
     "telehash"
@@ -19,7 +26,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/quartzjer/telehash-ipv4/issues"
+    "url": "https://github.com/quartzjer/telehash-udp4/issues"
   },
-  "homepage": "https://github.com/quartzjer/telehash-ipv4"
+  "homepage": "https://github.com/quartzjer/telehash-udp4"
 }
