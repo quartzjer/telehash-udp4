@@ -1,6 +1,29 @@
 var dgram = require("dgram");
 var os = require("os");
 
+// turn a path into a pipe
+exports.path = function(path, cb){
+  if(typeof path != 'object' || path.type != 'udp4') return cb();
+  if(typeof path.ip != 'string' || typeof path.port != 'number') return cb();
+  // TODO
+  cb({});
+};
+
+exports.paths = function(){
+  return [];
+};
+
+exports.deliver = function(deliver, cb){
+  // TODO
+  cb();
+};
+
+exports.discovery = function(packet, cb){
+  // TODO
+  cb();
+};
+
+
 exports.install = function(self, args)
 {
   var paths = [];
