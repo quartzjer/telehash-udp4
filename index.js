@@ -1,27 +1,38 @@
 var dgram = require("dgram");
 var os = require("os");
 
-// turn a path into a pipe
-exports.path = function(path, cb){
-  if(typeof path != 'object' || path.type != 'udp4') return cb();
-  if(typeof path.ip != 'string' || typeof path.port != 'number') return cb();
-  // TODO
-  cb({});
-};
+exports.name = 'udp4';
 
-exports.paths = function(){
-  return [];
-};
+// add our transport to this new mesh
+exports.extend = function(mesh, cb)
+{
+  // TODO create socket stuff
+  var tp = {};
+  // packet delivery goes to mesh.receive(packet,pipe)
 
-exports.deliver = function(deliver, cb){
-  // TODO
+  // turn a path into a pipe
+  tp.path = function(link, path, cb){
+    if(typeof path != 'object' || path.type != 'udp4') return cb();
+    if(typeof path.ip != 'string' || typeof path.port != 'number') return cb();
+    // TODO
+    cb({});
+  };
+
+  // return our current addressible paths
+  tp.paths = function(){
+    return [];
+  };
+
+  // enable discovery mode, broadcast this packet
+  tp.discovery = function(packet, cb){
+    // TODO
+    cb();
+  };
+
+  mesh.transports.push(tp);
   cb();
-};
+}
 
-exports.discovery = function(packet, cb){
-  // TODO
-  cb();
-};
 
 
 exports.install = function(self, args)
