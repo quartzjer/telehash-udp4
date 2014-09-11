@@ -14,10 +14,9 @@ describe('udp4', function(){
   });
 
   it('extends a mock mesh', function(done){
-    var mesh = {transports:[]};
-    ext.extend(mesh, function(err){
+    ext.extend({}, function(err, tp){
       expect(err).to.not.exist;
-      var tp = mesh.transports[0];
+      expect(tp).to.be.a('object');
       expect(tp.path).to.be.a('function');
       expect(tp.paths).to.be.a('function');
       expect(tp.discovery).to.be.a('function');
@@ -26,20 +25,16 @@ describe('udp4', function(){
   });
 
   it('returns paths array', function(done){
-    var mesh = {transports:[]};
-    ext.extend(mesh, function(err){
+    ext.extend({}, function(err, tp){
       expect(err).to.not.exist;
-      var tp = mesh.transports[0];
       expect(Array.isArray(tp.paths())).to.be.true;
       done();
     });
   });
   
   it('enables discovery', function(done){
-    var mesh = {transports:[]};
-    ext.extend(mesh, function(err){
+    ext.extend({}, function(err, tp){
       expect(err).to.not.exist;
-      var tp = mesh.transports[0];
       tp.discovery({}, function(err){
         expect(err).to.not.exist;
         done();
@@ -48,10 +43,8 @@ describe('udp4', function(){
   });
   
   it('skips unknown pipe', function(done){
-    var mesh = {transports:[]};
-    ext.extend(mesh, function(err){
+    ext.extend({}, function(err, tp){
       expect(err).to.not.exist;
-      var tp = mesh.transports[0];
       tp.path(false, {}, function(pipe){
         expect(pipe).to.not.exist;
         done();
@@ -60,10 +53,8 @@ describe('udp4', function(){
   });
 
   it('creates a pipe', function(done){
-    var mesh = {transports:[]};
-    ext.extend(mesh, function(err){
+    ext.extend({}, function(err, tp){
       expect(err).to.not.exist;
-      var tp = mesh.transports[0];
       tp.path(false, {type:'udp4',ip:'127.0.0.1',port:42424}, function(pipe){
         expect(pipe).to.exist;
         done();

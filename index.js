@@ -42,8 +42,7 @@ exports.extend = function(mesh, cb)
     cb();
   };
 
-  mesh.transports.push(tp);
-  cb();
+  cb(undefined, tp);
 }
 
 
