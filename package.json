@@ -1,10 +1,11 @@
 {
   "name": "telehash-udp4",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Transport bindings for telehash to udp4",
   "main": "index.js",
   "dependencies": {
-    "telehash":"~0.3.1"
+    "telehash":"git+https://github.com/telehash/node-telehash.git#v3",
+    "lob-enc":"git+https://github.com/quartzjer/lob-enc.git"
   },
   "devDependencies": {
     "chai": "*",

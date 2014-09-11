@@ -1,16 +1,31 @@
 var dgram = require('dgram');
 var os = require('os');
 var telehash = require('telehash');
+var lob = require('lob-enc');
 
 exports.keepalive = 30*1000;
 exports.name = 'udp4';
+exports.port = 0;
+exports.ip = '0.0.0.0';
 
 // add our transport to this new mesh
 exports.mesh = function(mesh, cbExt)
 {
+  var args = mesh.args||{};
+
   // TODO create socket stuff
   var tp = {pipes:{}};
-  // packet delivery goes to mesh.receive(packet,pipe)
+
+  // create the udp socket
+  tp.server = dgram.createSocket('udp4', function(msg, rinfo){
+    // get pipe
+    // mesh.receive(packet,pipe)
+//    self.receive(msg.toString("binary"), {type:"ipv4", ip:rinfo.address, port:rinfo.port});
+  });
+
+  tp.server.on('error', function(err){
+    telehash.log.error('udp4 socket fatal error',err);
+  });
 
   // turn a path into a pipe
   tp.pipe = function(hn, path, cbPipe){
@@ -24,7 +39,8 @@ exports.mesh = function(mesh, cbExt)
     pipe.id = id;
     pipe.path = path;
     pipe.onSend = function(packet){
-      // send
+      var buf = lob.encode(packet);
+      server.send(buf, 0, buf.length, to.port, to.ip);    
     }
     cbPipe(pipe);
   };
@@ -40,7 +56,12 @@ exports.mesh = function(mesh, cbExt)
     cbDisco();
   };
 
-  cbExt(undefined, tp);
+  // use config options or bind any/all
+  tp.server.bind(args.port?args.port:exports.port, args.ip||exports.ip, function(err){
+    if(err) telehash.log.error('udp4 bind error',err);
+    cbExt(undefined, tp);
+  });
+
 }
 
 

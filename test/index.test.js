@@ -45,10 +45,8 @@ describe('udp4', function(){
   it('skips unknown pipe', function(done){
     ext.mesh({}, function(err, tp){
       expect(err).to.not.exist;
-      tp.pipe(false, {}, function(pipe){
-        expect(pipe).to.not.exist;
-        done();
-      });
+      expect(tp.pipe(false, {}, function(){})).to.be.false;
+      done();
     });
   });
 
