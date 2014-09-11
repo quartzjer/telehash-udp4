@@ -1,21 +1,34 @@
-var dgram = require("dgram");
-var os = require("os");
+var dgram = require('dgram');
+var os = require('os');
+var telehash = require('telehash');
 
+exports.keepalive = 30*1000;
 exports.name = 'udp4';
 
 // add our transport to this new mesh
 exports.extend = function(mesh, cb)
 {
   // TODO create socket stuff
-  var tp = {};
+  var tp = {pipes:{}};
   // packet delivery goes to mesh.receive(packet,pipe)
 
   // turn a path into a pipe
-  tp.path = function(link, path, cb){
+  tp.path = function(hn, path, cb){
     if(typeof path != 'object' || path.type != 'udp4') return cb();
     if(typeof path.ip != 'string' || typeof path.port != 'number') return cb();
-    // TODO
-    cb({});
+    var id = [path.ip,path.port].join(':');
+    var pipe = tp.pipes[id];
+    if(!pipe)
+    {
+      pipe = new telehash.Pipe('udp4',exports.keepalive);
+      tp.pipes[id] = pipe;
+      pipe.id = id;
+      pipe.path = path;
+      pipe.onSend = function(packet){
+        // send
+      }
+    }
+    cb(pipe);
   };
 
   // return our current addressible paths

@@ -4,6 +4,7 @@
   "description": "Transport bindings for telehash to udp4",
   "main": "index.js",
   "dependencies": {
+    "telehash":"~0.3.1"
   },
   "devDependencies": {
     "chai": "*",
