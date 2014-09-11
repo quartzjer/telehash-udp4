@@ -6,43 +6,41 @@ exports.keepalive = 30*1000;
 exports.name = 'udp4';
 
 // add our transport to this new mesh
-exports.extend = function(mesh, cb)
+exports.mesh = function(mesh, cbExt)
 {
   // TODO create socket stuff
   var tp = {pipes:{}};
   // packet delivery goes to mesh.receive(packet,pipe)
 
   // turn a path into a pipe
-  tp.path = function(hn, path, cb){
-    if(typeof path != 'object' || path.type != 'udp4') return cb();
-    if(typeof path.ip != 'string' || typeof path.port != 'number') return cb();
+  tp.pipe = function(hn, path, cbPipe){
+    if(typeof path != 'object' || path.type != 'udp4') return false;
+    if(typeof path.ip != 'string' || typeof path.port != 'number') return false;
     var id = [path.ip,path.port].join(':');
     var pipe = tp.pipes[id];
-    if(!pipe)
-    {
-      pipe = new telehash.Pipe('udp4',exports.keepalive);
-      tp.pipes[id] = pipe;
-      pipe.id = id;
-      pipe.path = path;
-      pipe.onSend = function(packet){
-        // send
-      }
+    if(pipe) return cbPipe(pipe);
+    pipe = new telehash.Pipe('udp4',exports.keepalive);
+    tp.pipes[id] = pipe;
+    pipe.id = id;
+    pipe.path = path;
+    pipe.onSend = function(packet){
+      // send
     }
-    cb(pipe);
+    cbPipe(pipe);
   };
 
   // return our current addressible paths
   tp.paths = function(){
-    return [];
+    return [{type:'test'}];
   };
 
   // enable discovery mode, broadcast this packet
-  tp.discovery = function(packet, cb){
+  tp.discovery = function(packet, cbDisco){
     // TODO
-    cb();
+    cbDisco();
   };
 
-  cb(undefined, tp);
+  cbExt(undefined, tp);
 }
 
 
