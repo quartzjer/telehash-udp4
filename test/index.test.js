@@ -65,4 +65,14 @@ describe('udp4', function(){
     });
   });
 
+  it('sends a packet', function(done){
+    ext.mesh(mockMesh, function(err, tp){
+      expect(err).to.not.exist;
+      tp.pipe(false, {type:'udp4',ip:'127.0.0.1',port:42424}, function(pipe){
+        expect(pipe).to.exist;
+        pipe.send({},done);
+      });
+    });
+  });
+
 })
