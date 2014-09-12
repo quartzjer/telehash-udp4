@@ -57,7 +57,7 @@ exports.mesh = function(mesh, cbExt)
     var paths = [];
     for (var dev in ifaces) {
       ifaces[dev].forEach(function(details){
-        if(details.family != "IPv4") return;
+        if(details.family != 'IPv4') return;
         if(details.internal) return;
         var path = {type:'udp4',ip:details.address,port:address.port};
         paths.push(path);
@@ -72,11 +72,11 @@ exports.mesh = function(mesh, cbExt)
     // start the lan * listener
     if(!tp.lan)
     {
-      tp.lan = dgram.createSocket("udp4", receive);
-      tp.lan.bind(42420, "0.0.0.0", function(err){
+      tp.lan = dgram.createSocket('udp4', receive);
+      tp.lan.bind(42420, '0.0.0.0', function(err){
         if(err) return telehash.log.error('udp4 discovery bind error to 42420',err);
         tp.lan.setMulticastLoopback(true)
-        tp.lan.addMembership("239.42.42.42");
+        tp.lan.addMembership('239.42.42.42');
         tp.lan.setBroadcast(true);
         tp.discovery(packet, cbDisco);
       });
@@ -94,24 +94,24 @@ exports.mesh = function(mesh, cbExt)
     var buf = lob.encode(packet);
 
     // blast the packet out on the lan with a temp socket
-    var clone = dgram.createSocket("udp4");
-    clone.bind(tp.server.address().port, "0.0.0.0", function(err){
+    var clone = dgram.createSocket('udp4');
+    clone.bind(tp.server.address().port, '0.0.0.0', function(err){
       clone.setBroadcast(true);
       // brute force to common subnets and all
       var ifaces = os.networkInterfaces()
       for (var dev in ifaces) {
         ifaces[dev].forEach(function(details){
-          if(details.family != "IPv4") return;
+          if(details.family != 'IPv4') return;
           if(details.internal) return;
-          var parts = details.address.split(".");
+          var parts = details.address.split('.');
           for(var i = 3; i >= 0; i--)
           {
-            parts[i] = "255";
-            clone.send(buf, 0, buf.length, 42420, parts.join("."));
+            parts[i] = '255';
+            clone.send(buf, 0, buf.length, 42420, parts.join('.'));
           }
         });
       }
-      clone.send(buf, 0, buf.length, 42420, "239.42.42.42", function(){
+      clone.send(buf, 0, buf.length, 42420, '239.42.42.42', function(){
         clone.close();
         cbDisco();
       });
