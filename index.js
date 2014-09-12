@@ -1,6 +1,5 @@
 var dgram = require('dgram');
 var os = require('os');
-var telehash = require('telehash');
 var lob = require('lob-enc');
 
 exports.keepalive = 30*1000;
@@ -12,6 +11,7 @@ exports.ip = '0.0.0.0';
 exports.mesh = function(mesh, cbExt)
 {
   var args = mesh.args||{};
+  var telehash = mesh.lib;
 
   // TODO create socket stuff
   var tp = {pipes:{}};

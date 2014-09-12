@@ -4,7 +4,10 @@ var ext = require('../index.js');
 
 describe('udp4', function(){
 
-  var mockMesh = {receive:function(){}};
+  var mockMesh = {
+    lib:{Pipe:function(){return {send:function(p,cb){cb()}}},log:console},
+    receive:function(){}
+  };
 
   it('exports an object', function(){
     expect(ext).to.be.a('object');
