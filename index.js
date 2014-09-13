@@ -67,31 +67,36 @@ exports.mesh = function(mesh, cbExt)
   };
 
   // enable discovery mode, broadcast this packet
-  tp.discovery = function(packet, cbDisco){
+  tp.discover = function(opts, cbDisco){
+
+    // turn off discovery
+    if(!opts)
+    {
+      if(tp.lan) tp.lan.close();
+      tp.lan = false;
+      return cbDisco();
+    }
 
     // start the lan * listener
     if(!tp.lan)
     {
       tp.lan = dgram.createSocket('udp4', receive);
       tp.lan.bind(42420, '0.0.0.0', function(err){
-        if(err) return telehash.log.error('udp4 discovery bind error to 42420',err);
+        if(err){
+          telehash.log.error('udp4 discovery bind error to 42420',err);
+          return cbDisco(err);
+        }
         tp.lan.setMulticastLoopback(true)
         tp.lan.addMembership('239.42.42.42');
         tp.lan.setBroadcast(true);
-        tp.discovery(packet, cbDisco);
+        // recurse to finish
+        tp.discover(opts, cbDisco);
       });
       return;
     }
 
-    // turn off discovery
-    if(!packet)
-    {
-      tp.lan.close();
-      tp.lan = false;
-      return cbDisco();
-    }
-
-    var buf = lob.encode(packet);
+    var json = {type:'hn',hn:mesh.keys};
+    var buf = lob.encode({json:json});
 
     // blast the packet out on the lan with a temp socket
     var clone = dgram.createSocket('udp4');

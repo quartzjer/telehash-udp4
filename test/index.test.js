@@ -24,7 +24,7 @@ describe('udp4', function(){
       expect(tp).to.be.a('object');
       expect(tp.pipe).to.be.a('function');
       expect(tp.paths).to.be.a('function');
-      expect(tp.discovery).to.be.a('function');
+      expect(tp.discover).to.be.a('function');
       expect(tp.server).to.exist;
       done();
     });
@@ -43,7 +43,7 @@ describe('udp4', function(){
   it('enables discovery', function(done){
     ext.mesh(mockMesh, function(err, tp){
       expect(err).to.not.exist;
-      tp.discovery({}, function(err){
+      tp.discover({}, function(err){
         expect(err).to.not.exist;
         done();
       });
