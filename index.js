@@ -43,7 +43,7 @@ exports.mesh = function(mesh, cbExt)
     tp.pipes[id] = pipe;
     pipe.id = id;
     pipe.path = path;
-    pipe.onSend = function(packet, cb){
+    pipe.onSend = function(packet, link, cb){
       var buf = lob.encode(packet);
       tp.server.send(buf, 0, buf.length, path.port, path.ip, cb);
     }

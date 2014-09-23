@@ -5,7 +5,7 @@ var ext = require('../index.js');
 describe('udp4', function(){
 
   var mockMesh = {
-    lib:{Pipe:function(){return {send:function(p,cb){cb()}}},log:console},
+    lib:{Pipe:function(){return {send:function(p,l,cb){cb()}}},log:console},
     receive:function(){}
   };
 
@@ -73,7 +73,7 @@ describe('udp4', function(){
       expect(err).to.not.exist;
       tp.pipe(false, {type:'udp4',ip:'127.0.0.1',port:42424}, function(pipe){
         expect(pipe).to.exist;
-        pipe.send({},done);
+        pipe.send({},false,done);
       });
     });
   });
