@@ -55,14 +55,17 @@ exports.mesh = function(mesh, cbExt)
     var ifaces = os.networkInterfaces()
     var address = tp.server.address();
     var paths = [];
+    var localhost;
     for (var dev in ifaces) {
       ifaces[dev].forEach(function(details){
         if(details.family != 'IPv4') return;
-        if(details.internal) return;
         var path = {type:'udp4',ip:details.address,port:address.port};
-        paths.push(path);
+        if(details.internal) localhost = path;
+        else paths.push(path);
       });
     }
+    // use localhost path only if no others exist
+    if(paths.length == 0 && localhost) paths.push(localhost);
     return paths;
   };
 
