@@ -44,8 +44,8 @@ describe('udp4', function(){
     mockMesh.public = {ipv4:'1.2.3.4'}
     ext.mesh(mockMesh, function(err, tp){
       expect(err).to.not.exist;
-      var paths = tp.paths();
-      expect(paths[1].ip).to.be.equal('1.2.3.4');
+      var paths = tp.paths().filter(function(path){return path.ip == '1.2.3.4'});
+      expect(paths.length).to.be.equal(1);
       done();
     });
   });
