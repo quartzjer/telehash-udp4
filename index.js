@@ -33,7 +33,7 @@ exports.mesh = function(mesh, cbExt)
   });
 
   // turn a path into a pipe
-  tp.pipe = function(hn, path, cbPipe){
+  tp.pipe = function(link, path, cbPipe){
     if(typeof path != 'object' || path.type != 'udp4') return false;
     if(typeof path.ip != 'string' || typeof path.port != 'number') return false;
     var id = [path.ip,path.port].join(':');
@@ -59,6 +59,7 @@ exports.mesh = function(mesh, cbExt)
     for (var dev in ifaces) {
       ifaces[dev].forEach(function(details){
         if(details.family != 'IPv4') return;
+        if(details.address == mesh.public.ipv4) return; // don't duplicate
         var path = {type:'udp4',ip:details.address,port:address.port};
         if(details.internal) localhost = path;
         else paths.push(path);
@@ -66,6 +67,8 @@ exports.mesh = function(mesh, cbExt)
     }
     // use localhost path only if no others exist
     if(paths.length == 0 && localhost) paths.push(localhost);
+    // if public, add it too
+    if(mesh.public.ipv4) paths.push({type:'udp4',ip:mesh.public.ipv4,port:address.port});
     return paths;
   };
 

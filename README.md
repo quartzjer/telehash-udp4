@@ -1,4 +1,4 @@
-telehash-ipv4
+telehash-udp4
 =============
 
-Network bindings for telehash to ipv4 udp
+Network bindings for [telehash](https://github.com/telehash/telehash-js) to ipv4 udp.

@@ -5,6 +5,7 @@ var ext = require('../index.js');
 describe('udp4', function(){
 
   var mockMesh = {
+    public:{},
     lib:{Pipe:function(){return {send:function(p,l,cb){cb()}}},log:console},
     receive:function(){}
   };
@@ -34,8 +35,17 @@ describe('udp4', function(){
     ext.mesh(mockMesh, function(err, tp){
       expect(err).to.not.exist;
       var paths = tp.paths();
-      console.log(paths);
       expect(Array.isArray(paths)).to.be.true;
+      done();
+    });
+  });
+
+  it('returns a public path', function(done){
+    mockMesh.public = {ipv4:'1.2.3.4'}
+    ext.mesh(mockMesh, function(err, tp){
+      expect(err).to.not.exist;
+      var paths = tp.paths();
+      expect(paths[1].ip).to.be.equal('1.2.3.4');
       done();
     });
   });
