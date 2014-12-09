@@ -18,8 +18,8 @@ exports.mesh = function(mesh, cbExt)
 
   // generic handler to receive udp datagrams
   function receive(msg, rinfo){
-    var packet = lob.decode(msg);
-    if(!packet) return telehash.log.info('dropping invalid packet from',rinfo.address,msg.toString('hex'));
+    var packet = lob.decloak(msg);
+    if(!packet) return mesh.log.info('dropping invalid packet from',rinfo.address,msg.toString('hex'));
     tp.pipe(false, {type:'udp4',ip:rinfo.address,port:rinfo.port}, function(pipe){
       mesh.receive(packet, pipe);
     });
@@ -40,6 +40,7 @@ exports.mesh = function(mesh, cbExt)
     var pipe = tp.pipes[id];
     if(pipe) return cbPipe(pipe);
     pipe = new telehash.Pipe('udp4',exports.keepalive);
+    pipe.cloaked = true;
     tp.pipes[id] = pipe;
     pipe.id = id;
     pipe.path = path;
