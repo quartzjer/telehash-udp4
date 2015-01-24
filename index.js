@@ -13,7 +13,6 @@ exports.mesh = function(mesh, cbExt)
   var args = mesh.args||{};
   var telehash = mesh.lib;
 
-  // TODO create socket stuff
   var tp = {pipes:{}};
 
   // generic handler to receive udp datagrams
@@ -45,6 +44,7 @@ exports.mesh = function(mesh, cbExt)
     pipe.id = id;
     pipe.path = path;
     pipe.onSend = function(packet, link, cb){
+      if(!packet) return cb('no packet');
       tp.server.send(packet, 0, packet.length, path.port, path.ip, cb);
     }
     cbPipe(pipe);
