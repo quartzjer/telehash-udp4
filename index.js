@@ -28,7 +28,7 @@ exports.mesh = function(mesh, cbExt)
   tp.server = dgram.createSocket('udp4', receive);
 
   tp.server.on('error', function(err){
-    telehash.log.error('udp4 socket fatal error',err);
+    mesh.log.error('udp4 socket fatal error',err);
   });
 
   // turn a path into a pipe
@@ -89,7 +89,7 @@ exports.mesh = function(mesh, cbExt)
       tp.lan = dgram.createSocket('udp4', receive);
       tp.lan.bind(42420, '0.0.0.0', function(err){
         if(err){
-          telehash.log.error('udp4 discovery bind error to 42420',err);
+          mesh.log.error('udp4 discovery bind error to 42420',err);
           return cbDisco(err);
         }
         tp.lan.setMulticastLoopback(true)
@@ -132,7 +132,7 @@ exports.mesh = function(mesh, cbExt)
 
   // use config options or bind any/all
   tp.server.bind(args.port?args.port:exports.port, args.ip||exports.ip, function(err){
-    if(err) telehash.log.error('udp4 bind error',err);
+    if(err) mesh.log.error('udp4 bind error',err);
     cbExt(undefined, tp);
   });
 
