@@ -18,7 +18,8 @@ exports.mesh = function(mesh, cbExt)
   // generic handler to receive udp datagrams
   function receive(msg, rinfo){
     var packet = lob.decloak(msg);
-    if(!packet) return mesh.log.info('dropping invalid packet from',rinfo.address,msg.toString('hex'));
+    if(!packet) packet = lob.decode(msg); // accept un-encrypted discovery broadcast hints
+    if(!packet) return mesh.log.info('dropping invalid packet from',rinfo,msg.toString('hex'));
     tp.pipe(false, {type:'udp4',ip:rinfo.address,port:rinfo.port}, function(pipe){
       mesh.receive(packet, pipe);
     });
