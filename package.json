@@ -1,11 +1,11 @@
 {
   "name": "telehash-udp4",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Transport bindings for telehash to udp4",
   "main": "index.js",
   "dependencies": {
     "chrome-dgram": "~2.0.5",
-    "lob-enc":"git+https://github.com/quartzjer/lob-enc.git"
+    "lob-enc": "git+https://github.com/quartzjer/lob-enc.git"
   },
   "devDependencies": {
     "chai": "*",
@@ -15,7 +15,7 @@
     "dgram": "chrome-dgram"
   },
   "scripts": {
-      "test": "make test"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
