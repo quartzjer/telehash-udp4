@@ -1,6 +1,6 @@
 {
   "name": "telehash-udp4",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Transport bindings for telehash to udp4",
   "main": "index.js",
   "dependencies": {
