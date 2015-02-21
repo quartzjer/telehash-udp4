@@ -7,6 +7,17 @@ exports.name = 'udp4';
 exports.port = 0;
 exports.ip = '0.0.0.0';
 
+// compatibility wrapper between node v0.10 v0.12 and iojs
+function createSocket(type, receive)
+{
+  try{ // newer
+    var sock = dgram.createSocket({ type: type, reuseAddr: true }, receive);
+  }catch(E){ // older
+    var sock = dgram.createSocket(type, receive);
+  }
+  return sock;
+}
+
 // add our transport to this new mesh
 exports.mesh = function(mesh, cbExt)
 {
@@ -26,7 +37,7 @@ exports.mesh = function(mesh, cbExt)
   }
 
   // create the udp socket
-  tp.server = dgram.createSocket('udp4', receive);
+  tp.server = createSocket('udp4', receive);
 
   tp.server.on('error', function(err){
     mesh.log.error('udp4 socket fatal error',err);
@@ -87,7 +98,7 @@ exports.mesh = function(mesh, cbExt)
     // start the lan * listener
     if(!tp.lan)
     {
-      tp.lan = dgram.createSocket('udp4', receive);
+      tp.lan = createSocket('udp4', receive);
       tp.lan.bind(42420, '0.0.0.0', function(err){
         if(err){
           mesh.log.error('udp4 discovery bind error to 42420',err);
@@ -106,7 +117,7 @@ exports.mesh = function(mesh, cbExt)
     var buf = lob.encode({json:json});
 
     // blast the packet out on the lan with a temp socket
-    var clone = dgram.createSocket('udp4');
+    var clone = createSocket('udp4');
     clone.bind(tp.server.address().port, '0.0.0.0', function(err){
       clone.setBroadcast(true);
       // brute force to common subnets and all

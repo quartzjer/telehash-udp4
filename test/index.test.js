@@ -83,7 +83,9 @@ describe('udp4', function(){
       expect(err).to.not.exist;
       tp.pipe(false, {type:'udp4',ip:'127.0.0.1',port:42424}, function(pipe){
         expect(pipe).to.exist;
-        pipe.onSend(new Buffer(1),false,done);
+        pipe.onSend(new Buffer(1),false,function(){
+          done()
+        });
       });
     });
   });
